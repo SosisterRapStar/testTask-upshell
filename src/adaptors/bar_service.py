@@ -9,12 +9,11 @@ from datetime import datetime
 class BarServiceAdaptor(BarService):
     async def get_bar(self, symbol: str | None, start_date: str | None, end_date: str | None) -> Bar:
         if symbol is None:
-            raise WrongInputParametresException(message="Missing required parameter: symbol")
+            raise WrongInputParametresException(message="Symbol is required")
         if start_date is None:
             raise WrongInputParametresException(message="Missing required parameter: start_date")
         
         date_format = "%Y-%m-%d"
-
         if end_date is None:
             end_date = datetime.strftime(datetime.now(), date_format)
         try:
@@ -24,13 +23,17 @@ class BarServiceAdaptor(BarService):
             raise InvalidDateRangeException(message=f"Wrong date format, use {date_format}")
         except Exception as e:
             raise e
-        
+        current_date = datetime.now()
+
+        if start_date_in_datetime > current_date or end_date_in_datetime > current_date:
+            raise InvalidDateRangeException(message="Date must be in past or present time")
         delta = end_date_in_datetime - start_date_in_datetime
         
+         
         if delta.days > 30:
-            raise InvalidDateRangeException(message=f"Wrong date range. Date range can not be bigger then 30 days")
+            raise InvalidDateRangeException(message=f"Date must be not over 1 month")
         if delta.days < 0:
-            raise InvalidDateRangeException(message=f"Wrong date format. End date can not be bigger then start_date")
+            raise InvalidDateRangeException(message=f"start_date must be lower than end_date")
         
 
 

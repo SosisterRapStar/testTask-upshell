@@ -15,15 +15,17 @@ def check_error(e: Exception):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "error": e.message
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "message": e.message
             }
         )
     
     if isinstance(e, NotAuthorisedException):
         return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "error": e.message
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "message": e.message
             }
         )
     
@@ -31,22 +33,25 @@ def check_error(e: Exception):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "error": e.message
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "message": e.message
             }
         )
     
     if isinstance(e, WrongInputParametresException):
         return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "error": e.message
-        }
-    )
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "message": e.message
+            }
+        )
     
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
-            "error": "Internal server error. Please try again later."
+            "statusCode": status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "message": "Internal server error"
         }
     )
 

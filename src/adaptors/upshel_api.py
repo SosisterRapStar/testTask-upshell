@@ -36,11 +36,10 @@ class UpshelAPI(BarAPI):
         end_date: str
     ) -> dict:
         
-        
+    
         if not self.session:
             logger.fatal("Aiohttp client session was not provided")
             sys.exit(1)
-
         async with self.session.get(
             url=f"http://{self.endpoint_url}?symbol={symbol}&start_date={start_date}&end_date={end_date}",
             headers={"api-key": f"{self.auth_key}"},
@@ -48,9 +47,10 @@ class UpshelAPI(BarAPI):
         ) as response:
             print(f"http://{self.endpoint_url}?symbol={symbol}&start_date={start_date}&end_date={end_date}")
             response_data = await response.json()
-            print(response_data)
+            print("Статус", response_data, response.status)
             response_status = response.status
             if response_status in response_to_error:
+                # print("ПАРИРУРИ", response_to_error[response_status](message=response_data['message']))
                 raise response_to_error[response_status](message=response_data['message'])
             response.raise_for_status()
             return response_data
