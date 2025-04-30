@@ -12,11 +12,14 @@ router = APIRouter(tags=["Bar"])
 
 def check_error(e: Exception):
     if isinstance(e, BadRequestException):
+        message = e.message
+        if message == "Symbol must be BTCUSDT or ETHUSDT":
+            message = "Symbol is invalid"
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 "statusCode": status.HTTP_400_BAD_REQUEST,
-                "message": e.message
+                "message": message
             }
         )
     
