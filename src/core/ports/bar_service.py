@@ -16,9 +16,26 @@ class InvalidDateRangeException(ServiceLayerException):
 
 
 @dataclass
+class InvalidTargetInterval(ServiceLayerException):
+    pass
+
+
+@dataclass
 class BarService(ABC):
     barclient: BarAPI
 
     @abstractmethod
-    async def get_bar(self, symbol: str = None, minutes: int = None) -> Bar:
+    async def get_bar(
+        self, symbol: str | None, start_date: str | None, end_date: str | None
+    ) -> Bar:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_aggregated_bar(
+        self,
+        symbol: str | None,
+        target_interval: int | None,
+        start_date: str | None,
+        end_date: str | None,
+    ) -> Bar:
         raise NotImplementedError

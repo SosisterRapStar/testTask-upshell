@@ -1,3 +1,10 @@
+[tool.pytest.ini_options]
+pythonpath = [
+    ".", "src",
+]
+asyncio_mode="auto"
+
+
 [tool.poetry]
 name = "test-task-3"
 version = "0.1.0"
@@ -14,6 +21,8 @@ pydantic = "^2.11.3"
 pydantic-settings = "^2.9.1"
 ruff = "^0.11.6"
 uvicorn = "^0.34.2"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
 
 
 [build-system]

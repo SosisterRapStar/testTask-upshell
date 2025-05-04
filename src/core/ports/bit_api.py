@@ -3,6 +3,7 @@ import aiohttp
 from abc import ABC, abstractmethod
 from .errors import ServiceLayerException
 
+
 @dataclass
 class BadRequestException(ServiceLayerException):
     pass
@@ -16,6 +17,8 @@ class ServerErrorException(ServiceLayerException):
 @dataclass
 class NotAuthorisedException(ServiceLayerException):
     pass
+
+
 
 @dataclass
 class BarAPI(ABC):
@@ -32,8 +35,5 @@ class BarAPI(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_bar(self,
-        symbol: str,
-        start_date: str,
-        end_date: str) -> dict:
+    async def get_bar(self, symbol: str, start_date: str, end_date: str) -> dict:
         raise NotImplementedError
