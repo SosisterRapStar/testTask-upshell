@@ -19,7 +19,6 @@ class NotAuthorisedException(ServiceLayerException):
     pass
 
 
-
 @dataclass
 class BarAPI(ABC):
     endpoint_url: str

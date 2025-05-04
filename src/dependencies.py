@@ -15,3 +15,4 @@ def get_prod_container() -> DIContainer:
         endpoint_url="localhost:3002/crypto/data", auth_key=config.BIT_API_KEY
     )
     return DIContainer(bar_service=BarServiceAdaptor(barclient=api_adaptor))
+

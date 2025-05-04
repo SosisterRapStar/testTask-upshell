@@ -2,6 +2,7 @@
 pythonpath = [
     ".", "src",
 ]
+asyncio_default_fixture_loop_scope = "function"
 asyncio_mode="auto"
 
 
@@ -21,7 +22,6 @@ pydantic = "^2.11.3"
 pydantic-settings = "^2.9.1"
 ruff = "^0.11.6"
 uvicorn = "^0.34.2"
-pytest = "^8.3.5"
 pytest-asyncio = "^0.26.0"
 
 

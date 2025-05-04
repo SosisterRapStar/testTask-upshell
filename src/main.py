@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.cmd.rest import router
+from src.cmdpy.rest import router
 import uvicorn
 from dependencies import get_prod_container
 
