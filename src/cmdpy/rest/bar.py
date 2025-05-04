@@ -92,7 +92,8 @@ async def get_aggregated_bar(
     container = request.app.state.container
     bar_service: BarService = container.bar_service
     try:
-        result = await bar_service.get_aggregated_bar(symbol, start_date, end_date)
+        result = await bar_service.get_aggregated_bar(symbol=symbol, start_date=start_date, end_date=end_date, target_interval=target_interval)
         return result
     except Exception as e:
+        print(e)
         return check_error(e)
