@@ -44,10 +44,10 @@ from core.ports.bar_service import InvalidTargetInterval
         ]
     )
 ])
-def test_aggregation_10m_positive(get_bar_service, test_input, expected):
+async def test_aggregation_10m_positive(get_bar_service, test_input, expected):
     fakeAPI = get_bar_service.barclient
-    fakeAPI.set_fake_data = test_input
-    ans = get_bar_service.get_aggregated_bar(target_interval=10, symbol=None, end_date=None, start_date=None)
+    fakeAPI.set_fake_data(test_input)
+    ans = await get_bar_service.get_aggregated_bar(target_interval=10, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
     print(ans)
     assert ans == expected
 
@@ -95,23 +95,23 @@ def test_aggregation_10m_positive(get_bar_service, test_input, expected):
         ]
     )
 ])
-def test_aggregation_15m_positive(get_bar_service, test_input, expected):
+async def test_aggregation_15m_positive(get_bar_service, test_input, expected):
     fakeAPI = get_bar_service.barclient
-    fakeAPI.set_fake_data = test_input
-    ans = get_bar_service.get_aggregated_bar(target_interval=15, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
+    fakeAPI.set_fake_data(test_input)
+    ans = await get_bar_service.get_aggregated_bar(target_interval=15, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
     assert ans == expected
 
 
-def test_invalid_interval_0(get_bar_service):
+async def test_invalid_interval_0(get_bar_service):
     with pytest.raises(InvalidTargetInterval) as exc_info:
-        get_bar_service.get_aggregated_bar(target_interval=-1, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
+        await get_bar_service.get_aggregated_bar(target_interval=-1, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
 
     assert "target interval can not be lower than 0" in str(exc_info.value)
 
 
-def test_invalid_interval_5(get_bar_service):
+async def test_invalid_interval_5(get_bar_service):
     with pytest.raises(InvalidTargetInterval) as exc_info:
-        get_bar_service.get_aggregated_bar(target_interval=4, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
+        await get_bar_service.get_aggregated_bar(target_interval=4, symbol="DDD", end_date="2023-10-07", start_date="2023-10-05")
 
     assert "target interval must be divisible by 5" in str(exc_info.value)
 
@@ -130,12 +130,12 @@ def test_invalid_interval_5(get_bar_service):
         15
     ),
 ])
-def test_aggregation_not_enough_data(get_bar_service, test_input, target_interval):
+async def test_aggregation_not_enough_data(get_bar_service, test_input, target_interval):
     fakeAPI = get_bar_service.barclient
-    fakeAPI.set_fake_data = test_input
+    fakeAPI.set_fake_data(test_input)
     
     with pytest.raises(InvalidTargetInterval) as exc_info:
-        get_bar_service.get_aggregated_bar(
+        await get_bar_service.get_aggregated_bar(
             symbol="DDD",
             end_date="2023-10-07",
             start_date="2023-10-05",

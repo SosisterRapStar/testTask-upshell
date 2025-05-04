@@ -6,6 +6,8 @@ activate = export PYTHONPATH="src:$$PYTHONPATH"
 run:
 	$(activate) && venv/bin/python src/main.py
 
+run_test:
+	$(activate) && pytest -v
 
 
-.PHONY: run
+.PHONY: run run_test
