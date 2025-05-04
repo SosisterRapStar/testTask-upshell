@@ -4,6 +4,7 @@ from core.ports.bar_service import (
     BarService,
     InvalidDateRangeException,
     WrongInputParametresException,
+    InvalidTargetInterval
 )
 from core.ports.errors import ServiceLayerException
 from core.ports.bit_api import (
@@ -44,6 +45,15 @@ def check_error(e: Exception):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"statusCode": status.HTTP_400_BAD_REQUEST, "message": e.message},
+        )
+    
+    if isinstance(e, InvalidTargetInterval):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "message": e.message
+            }
         )
 
     return JSONResponse(

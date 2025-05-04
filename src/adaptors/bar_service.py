@@ -17,10 +17,10 @@ class BarServiceAdaptor(BarService):
         self, symbol: str | None, start_date: str | None, end_date: str | None
     ) -> Bar:
         if symbol is None:
-            raise WrongInputParametresException(message="symbol is required")
+            raise WrongInputParametresException(message="Symbol is required")
         if start_date is None:
             raise WrongInputParametresException(
-                message="missing required parameter: start_date"
+                message="Missing required parameter: start_date"
             )
 
         date_format = "%Y-%m-%d"
@@ -31,7 +31,7 @@ class BarServiceAdaptor(BarService):
             end_date_in_datetime = datetime.strptime(end_date, date_format)
         except ValueError as e:
             raise InvalidDateRangeException(
-                message=f"wrong date format, use {date_format}"
+                message=f"Wrong date format, use {date_format}"
             )
         except Exception as e:
             raise e
@@ -39,15 +39,15 @@ class BarServiceAdaptor(BarService):
 
         if start_date_in_datetime > current_date or end_date_in_datetime > current_date:
             raise InvalidDateRangeException(
-                message="date must be in past or present time"
+                message="Date must be in past or present time"
             )
         delta = end_date_in_datetime - start_date_in_datetime
 
         if delta.days > 30:
-            raise InvalidDateRangeException(message=f"date must be not over 1 month")
+            raise InvalidDateRangeException(message=f"Date must be not over 1 month")
         if delta.days < 0:
             raise InvalidDateRangeException(
-                message=f"start_date must be lower than end_date"
+                message=f"Start date must be earlier than end date"
             )
 
         async with self.barclient as client:
@@ -64,9 +64,9 @@ class BarServiceAdaptor(BarService):
         end_date: str | None,
     ):
         if target_interval < 0:
-            raise InvalidTargetInterval("target interval can not be lower than 0")
+            raise InvalidTargetInterval("Target_interval must be greater than zero and a multiple of 5")
         elif target_interval % 5 != 0:
-            raise InvalidTargetInterval("target interval must be divisible by 5")
+            raise InvalidTargetInterval("Target_interval must be greater than zero and a multiple of 5")
 
         bars: list[dict] = await self.get_bar(
             symbol=symbol, start_date=start_date, end_date=end_date
@@ -74,7 +74,7 @@ class BarServiceAdaptor(BarService):
         num_of_minimum_data = target_interval // 5
         num_of_source_bars = len(bars) - (len(bars) % num_of_minimum_data)
         if num_of_source_bars <= 0:
-            raise InvalidTargetInterval("not enougth info for chose interval")
+            raise InvalidTargetInterval("Not enougth info for chose interval")
 
         ans_bars = list()
 
