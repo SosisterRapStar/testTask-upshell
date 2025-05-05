@@ -52,7 +52,7 @@ class BarServiceAdaptor(BarService):
 
         async with self.barclient as client:
             response = await client.get_bar(
-                symbol=symbol, start_date=start_date, end_date=start_date
+                symbol=symbol, start_date=start_date, end_date=end_date
             )
             return response
 
