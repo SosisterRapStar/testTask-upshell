@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from core.domain.bar import Bar
+from core.domain.forecast import Forecast
 from core.ports.bit_api import BarAPI
 from core.ports.errors import ServiceLayerException
 
@@ -37,5 +38,16 @@ class BarService(ABC):
         target_interval: int | None,
         start_date: str | None,
         end_date: str | None,
-    ) -> Bar:
+    ) -> list[Bar]:
+        raise NotImplementedError
+    
+
+    @abstractmethod
+    async def forecast(
+        self, 
+        symbol: str | None,
+        interval: int | None,
+        start_forecast_datetime: int | None, 
+        history_bars: int | None,
+    ) -> Forecast:
         raise NotImplementedError
