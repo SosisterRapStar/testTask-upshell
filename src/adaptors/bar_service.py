@@ -1,14 +1,19 @@
 from dataclasses import dataclass
 from core.ports.bar_service import BarService
 from core.domain.bar import Bar
+from core.domain.forecast import Forecast
 from core.ports.bar_service import (
     WrongInputParametresException,
     InvalidDateRangeException,
     InvalidTargetInterval,
     ServiceLayerException,
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import ValidationError
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
 
 
 @dataclass
@@ -100,3 +105,49 @@ class BarServiceAdaptor(BarService):
             ans_bars.append(aggregated_bar)
 
         return ans_bars
+    
+
+    async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
+        start_forecast_datetime_time = datetime.strptime(start_forecast_datetime, "%Y-%m-%d")
+        bars = self.get_aggregated_bar(symbol=symbol, interval = interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
+        history_bars = [bars[i] for i in range(interval)]
+        for i in history_bars:
+            i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%d")
+        df = pd.DataFrame([{
+        'datetime': bar['datetime'],
+        'open': bar['open'],
+        'high': bar['high'],
+        'low': bar['low'],
+        'close': bar['close'] } for bar in history_bars])
+
+
+        df.dropna(inplace=True)
+    
+        X = df[[f'close_lag_{i}' for i in range(1, history_bars + 1)]]
+        y = df['close'].shift(-1).dropna()
+        X = X.iloc[:-1]  
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        last_data = X.iloc[-1:].values.reshape(1, -1)
+        forecast_price = model.predict(last_data)[0]
+        
+        residuals = y - model.predict(X)
+        std_dev = residuals.std()
+        upper_bound = forecast_price + 2 * std_dev
+        lower_bound = forecast_price - 2 * std_dev
+        
+        current_price = df['close'].iloc[-1]
+        if forecast_price > current_price:  # 0.5% выше
+            recommendation = "BUY"
+        elif forecast_price < current_price:  # 0.5% ниже
+            recommendation = "SELL"
+
+        
+        return Forecast(
+            recommendation=recommendation,
+            forecast_price=round(forecast_price, 2),
+            upper_bound=round(upper_bound, 2),
+            lower_bound=round(lower_bound, 2)
+        )
+
