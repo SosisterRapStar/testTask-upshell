@@ -1,5 +1,0 @@
-{
-"errorCode": str
-"statusCode": str
-"message": str
-}
