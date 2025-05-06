@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Header, HTTPException, Request
 from core.domain.bar import Bar
+from core.domain.forecast import Forecast
 from core.ports.bar_service import (
     BarService,
     InvalidDateRangeException,
@@ -95,5 +96,22 @@ async def get_aggregated_bar(
         result = await bar_service.get_aggregated_bar(symbol=symbol, start_date=start_date, end_date=end_date, target_interval=target_interval)
         return result
     except Exception as e:
-        print(e)
+        return check_error(e)
+    
+
+
+@router.get("/forecast", response_model=Forecast)
+async def get_aggregated_bar(
+    request: Request,
+    symbol: str | None = None,
+    interval: int | None = None,
+    start_forecast_datetime: str | None = None,
+    history_bars: str | None = None,
+):
+    container = request.app.state.container
+    bar_service: BarService = container.bar_service
+    try:
+        result = await bar_service.forecast(symbol=symbol, interval=interval, start_forecast_datetime=start_forecast_datetime, history_bars=history_bars)
+        return result
+    except Exception as e:
         return check_error(e)
