@@ -22,13 +22,9 @@ router = APIRouter(tags=["Bar"])
 # TODO: сделать отдельные классы для 400 ошибок, для 500 и от них наследовать
 def check_error(e: Exception):
     if isinstance(e, BadRequestException):
-        message = e.message
-        if message == "Symbol must be BTCUSDT or ETHUSDT":
-            message = "Symbol is invalid"
-            code = "InvalidSymbol"
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"errorCode": code, "message": message},
+            content={"errorCode": "InvalidSymbol", "message": "Symbol is invalid"},
         )
 
     if isinstance(e, NotAuthorisedException):

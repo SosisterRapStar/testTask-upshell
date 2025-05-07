@@ -48,7 +48,7 @@ class UpshelAPI(BarAPI):
             if response_status in response_to_error:
                 # print("ПАРИРУРИ", response_to_error[response_status](message=response_data['message']))
                 raise response_to_error[response_status](
-                    message=response_data["message"]
+                    code="", message=response_data["message"]
                 )
             response.raise_for_status()
             return response_data

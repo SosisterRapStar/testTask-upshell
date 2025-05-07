@@ -52,10 +52,10 @@ class BarServiceAdaptor(BarService):
         delta = end_date_in_datetime - start_date_in_datetime
 
         if delta.days > 30:
-            raise InvalidDateRangeException(message=f"Date must be not over 1 month")
+            raise InvalidDateRangeException(code="InvalidDateRange", message=f"Date must be not over 1 month")
         if delta.days < 0:
             raise InvalidDateRangeException(
-                code="StartDateAfterEndDate	",
+                code="StartDateAfterEndDate",
                 message=f"Start date must be earlier than end date"
             )
 
