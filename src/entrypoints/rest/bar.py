@@ -108,6 +108,7 @@ async def get_aggregated_bar(
     container = request.app.state.container
     bar_service: BarService = container.bar_service
     try:
+        print("dsdd")
         result = await bar_service.forecast(symbol=symbol, interval=interval, start_forecast_datetime=start_forecast_datetime, history_bars=history_bars)
         return result
     except Exception as e:
