@@ -150,10 +150,10 @@ class BarServiceAdaptor(BarService):
             recommendation = "SELL"
 
         
-        return Forecast(
-            recommendation=recommendation,
-            forecast_price=round(forecast_price, 2),
-            upper_bound=round(upper_bound, 2),
-            lower_bound=round(lower_bound, 2)
-        )
+        return {"recommendation": recommendation,
+            "forecast_price": round(forecast_price, 2),
+            "upper_bound": round(upper_bound, 2),
+            "lower_bound": round(lower_bound, 2)}
+            
+        
 
