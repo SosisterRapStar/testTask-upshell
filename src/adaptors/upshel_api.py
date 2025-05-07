@@ -43,7 +43,6 @@ class UpshelAPI(BarAPI):
                 f"http://{self.endpoint_url}?symbol={symbol}&start_date={start_date}&end_date={end_date}"
             )
             response_data = await response.json()
-            print("Статус", response_data, response.status)
             response_status = response.status
             if response_status in response_to_error:
                 # print("ПАРИРУРИ", response_to_error[response_status](message=response_data['message']))
