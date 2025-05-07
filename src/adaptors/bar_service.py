@@ -121,7 +121,7 @@ class BarServiceAdaptor(BarService):
         bars = await self.get_aggregated_bar(symbol=symbol, target_interval=interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
         history_bars = [bars[i] for i in range(history_bars)]
         for i in history_bars:
-            i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%d")
+            i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
         df = pd.DataFrame([{
         'datetime': bar['datetime'],
         'open': bar['open'],
