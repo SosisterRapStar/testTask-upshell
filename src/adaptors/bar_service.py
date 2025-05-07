@@ -114,7 +114,9 @@ class BarServiceAdaptor(BarService):
     async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
         if history_bars <= 1:
             raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
+        
         start_forecast_datetime_time = datetime.strptime(start_forecast_datetime, "%Y-%m-%d")
+        print(datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"))
         bars = await self.get_aggregated_bar(symbol=symbol, target_interval=interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
         history_bars = [bars[i] for i in range(history_bars)]
         for i in history_bars:
