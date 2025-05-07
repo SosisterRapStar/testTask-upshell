@@ -112,6 +112,7 @@ class BarServiceAdaptor(BarService):
     
 
     async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
+        start_forecast_datetime = start_forecast_datetime.split('T')[0]
         if history_bars <= 1:
             raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
         
