@@ -103,7 +103,7 @@ async def get_aggregated_bar(
     symbol: str | None = None,
     interval: int | None = None,
     start_forecast_datetime: str | None = None,
-    history_bars: float | None = None,
+    history_bars: int | None = None,
 ):
     container = request.app.state.container
     bar_service: BarService = container.bar_service
