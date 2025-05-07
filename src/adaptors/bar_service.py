@@ -135,7 +135,12 @@ class BarServiceAdaptor(BarService):
             'close': bar['close']
         } for bar in history])
 
-        # Создаем лаговые признаки
+
+        df['range'] = df['high'] - df['low']
+
+        average_range = df['range'].mean()
+        half_average_range = average_range / 2
+        
         for i in range(1, history_bars + 1):
             df[f'close_lag_{i}'] = df['close'].shift(i)
 
@@ -152,8 +157,8 @@ class BarServiceAdaptor(BarService):
         
         residuals = y - model.predict(X)
         std_dev = residuals.std()
-        upper_bound = forecast_price + 2 * std_dev
-        lower_bound = forecast_price - 2 * std_dev
+        upper_bound = forecast_price + half_average_range
+        lower_bound = forecast_price - half_average_range
         
         current_price = df['close'].iloc[-1]
         if forecast_price > current_price: 
