@@ -25,34 +25,35 @@ def check_error(e: Exception):
         message = e.message
         if message == "Symbol must be BTCUSDT or ETHUSDT":
             message = "Symbol is invalid"
+            code = "InvalidSymbol"
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"statusCode": status.HTTP_400_BAD_REQUEST, "message": message},
+            content={"errorCode": code, "message": message},
         )
 
     if isinstance(e, NotAuthorisedException):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"statusCode": status.HTTP_400_BAD_REQUEST, "message": e.message},
+            content={"errorCode": "NotAuthorized", "message": e.message},
         )
 
     if isinstance(e, InvalidDateRangeException):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"statusCode": status.HTTP_400_BAD_REQUEST, "message": e.message},
+            content={"errorCode": e.code, "message": e.message},
         )
 
     if isinstance(e, WrongInputParametresException):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"statusCode": status.HTTP_400_BAD_REQUEST, "message": e.message},
+            content={"errorCode": e.code, "message": e.message},
         )
     
     if isinstance(e, InvalidTargetInterval):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "statusCode": status.HTTP_400_BAD_REQUEST,
+                "errorCode": e.code,
                 "message": e.message
             }
         )
@@ -60,7 +61,7 @@ def check_error(e: Exception):
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
-            "statusCode": status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "statusCode": "InternalError",
             "message": "Internal server error",
         },
     )

@@ -20,6 +20,9 @@ class InvalidDateRangeException(ServiceLayerException):
 class InvalidTargetInterval(ServiceLayerException):
     pass
 
+@dataclass
+class InvalidHistoryBars(ServiceLayerException):
+    pass
 
 @dataclass
 class BarService(ABC):

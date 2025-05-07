@@ -7,6 +7,7 @@ from core.ports.bar_service import (
     InvalidDateRangeException,
     InvalidTargetInterval,
     ServiceLayerException,
+    InvalidHistoryBars
 )
 from datetime import datetime, timedelta
 from pydantic import ValidationError
@@ -22,10 +23,10 @@ class BarServiceAdaptor(BarService):
         self, symbol: str | None, start_date: str | None, end_date: str | None
     ) -> Bar:
         if symbol is None:
-            raise WrongInputParametresException(message="Symbol is required")
+            raise WrongInputParametresException(code="MissingSymbol", message="Symbol is required")
         if start_date is None:
             raise WrongInputParametresException(
-                message="Missing required parameter: start_date"
+                code="MissingDate", message="Missing required parameter: start_date"
             )
 
         date_format = "%Y-%m-%d"
@@ -36,6 +37,7 @@ class BarServiceAdaptor(BarService):
             end_date_in_datetime = datetime.strptime(end_date, date_format)
         except ValueError as e:
             raise InvalidDateRangeException(
+                code="InvalidTimeParameter",
                 message=f"Wrong date format, use {date_format}"
             )
         except Exception as e:
@@ -44,6 +46,7 @@ class BarServiceAdaptor(BarService):
 
         if start_date_in_datetime > current_date or end_date_in_datetime > current_date:
             raise InvalidDateRangeException(
+                code="InvalidDateRange",
                 message="Date must be in past or present time"
             )
         delta = end_date_in_datetime - start_date_in_datetime
@@ -52,6 +55,7 @@ class BarServiceAdaptor(BarService):
             raise InvalidDateRangeException(message=f"Date must be not over 1 month")
         if delta.days < 0:
             raise InvalidDateRangeException(
+                code="StartDateAfterEndDate	",
                 message=f"Start date must be earlier than end date"
             )
 
@@ -69,9 +73,9 @@ class BarServiceAdaptor(BarService):
         end_date: str | None,
     ):
         if target_interval < 0:
-            raise InvalidTargetInterval("Target_interval must be greater than zero and a multiple of 5")
+            raise InvalidTargetInterval(code="InvalidTargetInterval", message="Interval must be greater than zero and a multiple of 5")
         elif target_interval % 5 != 0:
-            raise InvalidTargetInterval("Target_interval must be greater than zero and a multiple of 5")
+            raise InvalidTargetInterval(code="InvalidTargetInterval", message="Interval must be greater than zero and a multiple of 5")
 
         bars: list[dict] = await self.get_bar(
             symbol=symbol, start_date=start_date, end_date=end_date
@@ -108,9 +112,11 @@ class BarServiceAdaptor(BarService):
     
 
     async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
+        if history_bars <= 1:
+            raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
         start_forecast_datetime_time = datetime.strptime(start_forecast_datetime, "%Y-%m-%d")
         bars = self.get_aggregated_bar(symbol=symbol, interval = interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
-        history_bars = [bars[i] for i in range(interval)]
+        history_bars = [bars[i] for i in range(history_bars)]
         for i in history_bars:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%d")
         df = pd.DataFrame([{
@@ -138,9 +144,9 @@ class BarServiceAdaptor(BarService):
         lower_bound = forecast_price - 2 * std_dev
         
         current_price = df['close'].iloc[-1]
-        if forecast_price > current_price:  # 0.5% выше
+        if forecast_price > current_price: 
             recommendation = "BUY"
-        elif forecast_price < current_price:  # 0.5% ниже
+        elif forecast_price < current_price: 
             recommendation = "SELL"
 
         
