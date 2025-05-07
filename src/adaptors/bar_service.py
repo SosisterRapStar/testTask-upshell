@@ -119,16 +119,15 @@ class BarServiceAdaptor(BarService):
         print(datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"))
         print(start_forecast_datetime)
         bars = await self.get_aggregated_bar(symbol=symbol, target_interval=interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
-        history_bars = bars[:history_bars + 1]
-        print(history_bars)
-        for i in history_bars:
+        history = bars[:history_bars + 1]
+        for i in history:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
         df = pd.DataFrame([{
         'datetime': bar['datetime'],
         'open': bar['open'],
         'high': bar['high'],
         'low': bar['low'],
-        'close': bar['close'] } for bar in history_bars])
+        'close': bar['close'] } for bar in history])
 
 
         df.dropna(inplace=True)
