@@ -116,25 +116,34 @@ class BarServiceAdaptor(BarService):
             raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
         
         start_forecast_datetime_time = datetime.strptime(start_forecast_datetime, "%Y-%m-%d")
-        print(datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"))
-        print(start_forecast_datetime)
-        bars = await self.get_aggregated_bar(symbol=symbol, target_interval=interval, start_date=datetime.strftime(start_forecast_datetime_time-timedelta(days=28), "%Y-%m-%d"), end_date=start_forecast_datetime)
+        bars = await self.get_aggregated_bar(
+            symbol=symbol,
+            target_interval=interval,
+            start_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=28), "%Y-%m-%d"),
+            end_date=start_forecast_datetime
+        )
+        
         history = bars[:history_bars + 1]
         for i in history:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        
         df = pd.DataFrame([{
-        'datetime': bar['datetime'],
-        'open': bar['open'],
-        'high': bar['high'],
-        'low': bar['low'],
-        'close': bar['close'] } for bar in history])
+            'datetime': bar['datetime'],
+            'open': bar['open'],
+            'high': bar['high'],
+            'low': bar['low'],
+            'close': bar['close']
+        } for bar in history])
 
+        # Создаем лаговые признаки
+        for i in range(1, history_bars + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
 
-        df.dropna(inplace=True)
-    
+        df.dropna(inplace=True)  
+
         X = df[[f'close_lag_{i}' for i in range(1, history_bars + 1)]]
-        y = df['close'].shift(-1).dropna()
-        X = X.iloc[:-1]  
+        y = df['close']
+        
         model = LinearRegression()
         model.fit(X, y)
         
@@ -151,12 +160,13 @@ class BarServiceAdaptor(BarService):
             recommendation = "BUY"
         elif forecast_price < current_price: 
             recommendation = "SELL"
+        else:
+            recommendation = "HOLD"
 
-        
-        return {"recommendation": recommendation,
+        return {
+            "recommendation": recommendation,
             "forecast_price": round(forecast_price, 2),
             "upper_bound": round(upper_bound, 2),
-            "lower_bound": round(lower_bound, 2)}
-            
-        
+            "lower_bound": round(lower_bound, 2)
+        }
 
