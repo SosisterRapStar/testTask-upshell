@@ -120,8 +120,8 @@ class BarServiceAdaptor(BarService):
         bars = await self.get_aggregated_bar(
             symbol=symbol,
             target_interval=interval,
-            start_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=28), "%Y-%m-%d"),
-            end_date=start_forecast_datetime
+            start_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=29), "%Y-%m-%d"),
+            end_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=1), "%Y-%m-%d")
         )
         
         history = bars[:history_bars + 1]
