@@ -128,7 +128,7 @@ class BarServiceAdaptor(BarService):
             end_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=1), "%Y-%m-%d")
         )
         
-        history = bars[:history_bars + 1]
+        history = bars[-1 * (history_bars):]
         for i in history:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
         
