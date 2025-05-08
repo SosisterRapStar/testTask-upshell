@@ -53,6 +53,15 @@ def check_error(e: Exception):
                 "message": e.message
             }
         )
+    
+    if isinstance(e, InvalidTargetInterval):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "errorCode": e.code,
+                "message": e.message
+            }
+        )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -101,19 +110,14 @@ async def get_aggregated_bar(
 async def get_aggregated_bar(
     request: Request,
     symbol: str | None = None,
-    interval: int | None = None,
+    interval: str | None = None,
     start_forecast_datetime: str | None = None,
     history_bars: int | None = None,
 ):
     container = request.app.state.container
     bar_service: BarService = container.bar_service
     try:
-        print("dsdd")
-        try:
-            result = await bar_service.forecast(symbol=symbol, interval=interval, start_forecast_datetime=start_forecast_datetime, history_bars=history_bars)
-        except Exception as e:
-            print(e)
-        print(result)
+        result = await bar_service.forecast(symbol=symbol, interval=interval, start_forecast_datetime=start_forecast_datetime, history_bars=history_bars)
         return result
     except Exception as e:
         return check_error(e)
