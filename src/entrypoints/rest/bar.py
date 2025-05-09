@@ -121,4 +121,5 @@ async def get_aggregated_bar(
         result = await bar_service.forecast(symbol=symbol, interval=interval, start_forecast_datetime=start_forecast_datetime, history_bars=history_bars)
         return result
     except Exception as e:
+        print(e)
         return check_error(e)

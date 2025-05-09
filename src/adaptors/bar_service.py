@@ -168,7 +168,6 @@ class BarServiceAdaptor(BarService):
         lower_bound = forecast_price - half_average_range
         
         current_price = df['close'].iloc[-1]
-        print(forecast_price)
         if forecast_price > current_price: 
             recommendation = "BUY"
         elif forecast_price <= current_price: 
