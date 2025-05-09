@@ -147,7 +147,7 @@ class BarServiceAdaptor(BarService):
 
         average_range = df['range'].mean()
         half_average_range = average_range / 2
-        
+        print(df)
         for i in range(1, history_bars + 1):
             df[f'close_lag_{i}'] = df['close'].shift(i)
 
@@ -155,6 +155,8 @@ class BarServiceAdaptor(BarService):
 
         X = df[[f'close_lag_{i}' for i in range(1, history_bars + 1)]]
         y = df['close']
+
+        print(df)
         
         model = LinearRegression()
         model.fit(X, y)
