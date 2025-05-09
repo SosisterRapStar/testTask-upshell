@@ -111,36 +111,42 @@ class BarServiceAdaptor(BarService):
         return ans_bars
     
 
+
+
     async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
         if datetime.strptime(start_forecast_datetime, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.now():
             raise InvalidHistoryBars(code="InvalidStartForecastDatetime", message="Forecast datetime can not be in future")
-        start_forecast_datetime = start_forecast_datetime.split('T')[0]
-        print(start_forecast_datetime)
+        
         try:
             interval = int(interval)
         except Exception as e:
-            InvalidHistoryBars(code="InvalidTargetInterval", message="Interval must be greater than zero and a multiple of 5")
-        if history_bars <= 1:
-            raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
+            raise InvalidHistoryBars(code="InvalidTargetInterval", message="Interval must be greater than zero and a multiple of 5")
         
-        start_forecast_datetime_time = datetime.strptime(start_forecast_datetime, "%Y-%m-%d")
+        if history_bars <= 1:
+            raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer > 1")
+
+        start_forecast_datetime_time = datetime.strptime(start_forecast_datetime.split('T')[0], "%Y-%m-%d")
         bars = await self.get_aggregated_bar(
             symbol=symbol,
             target_interval=interval,
             start_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=29), "%Y-%m-%d"),
             end_date=datetime.strftime(start_forecast_datetime_time, "%Y-%m-%d")
         )
-        history = bars[-1 * (history_bars):]
-        for i in history:
-            i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        
+        required_bars = history_bars + 1
+        if len(bars) < required_bars:
+            raise InvalidHistoryBars(code="NotEnoughData", message=f"Need at least {required_bars} bars, got {len(bars)}")
+        
+        history = bars[-required_bars:]
         
         df = pd.DataFrame([{
-            'datetime': bar['datetime'],
+            'datetime': datetime.strptime(bar['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ"),
             'open': bar['open'],
             'high': bar['high'],
             'low': bar['low'],
             'close': bar['close']
-        } for bar in history])
+        } for bar in history]).sort_values('datetime')
+        
 
 
         df['range'] = df['high'] - df['low']
@@ -149,10 +155,11 @@ class BarServiceAdaptor(BarService):
         half_average_range = average_range / 2
         for i in range(1, history_bars + 1):
             df[f'close_lag_{i}'] = df['close'].shift(i)
-
-        # print(df)
-        # print("--------------")
-        # print(df)
+        
+        df.dropna(inplace=True)
+        
+        if len(df) == 0:
+            raise InvalidHistoryBars(code="EmptyDataset", message="Not enough data after creating lags")
         X = df[[f'close_lag_{i}' for i in range(1, history_bars + 1)]]
         y = df['close']
         print(X)
