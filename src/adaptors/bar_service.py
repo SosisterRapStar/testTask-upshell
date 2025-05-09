@@ -133,7 +133,7 @@ class BarServiceAdaptor(BarService):
         history = bars[-1 * (history_bars):]
         for i in history:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        print(history)
+        
         df = pd.DataFrame([{
             'datetime': bar['datetime'],
             'open': bar['open'],
@@ -168,12 +168,12 @@ class BarServiceAdaptor(BarService):
         lower_bound = forecast_price - half_average_range
         
         current_price = df['close'].iloc[-1]
+        print(forecast_price)
         if forecast_price > current_price: 
             recommendation = "BUY"
-        elif forecast_price < current_price: 
+        elif forecast_price <= current_price: 
             recommendation = "SELL"
-        else:
-            recommendation = "HOLD"
+        
 
         print({
             "recommendation": recommendation,
