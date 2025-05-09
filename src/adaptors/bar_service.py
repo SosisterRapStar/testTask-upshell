@@ -128,13 +128,12 @@ class BarServiceAdaptor(BarService):
             symbol=symbol,
             target_interval=interval,
             start_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=29), "%Y-%m-%d"),
-            end_date=datetime.strftime(start_forecast_datetime_time - timedelta(days=1), "%Y-%m-%d")
+            end_date=datetime.strftime(start_forecast_datetime_time, "%Y-%m-%d")
         )
-        
         history = bars[-1 * (history_bars):]
         for i in history:
             i['datetime'] = datetime.strptime(i['datetime'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        
+        print(history)
         df = pd.DataFrame([{
             'datetime': bar['datetime'],
             'open': bar['open'],
