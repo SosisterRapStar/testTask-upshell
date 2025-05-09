@@ -123,7 +123,7 @@ class BarServiceAdaptor(BarService):
             raise InvalidHistoryBars(code="InvalidTargetInterval", message="Interval must be greater than zero and a multiple of 5")
         
         if history_bars <= 1:
-            raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer > 1")
+            raise InvalidHistoryBars(code="InvalidHistoryBars", message="History bars must be a positive integer")
 
         start_forecast_datetime_time = datetime.strptime(start_forecast_datetime.split('T')[0], "%Y-%m-%d")
         bars = await self.get_aggregated_bar(
