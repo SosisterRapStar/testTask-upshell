@@ -112,9 +112,10 @@ class BarServiceAdaptor(BarService):
     
 
     async def forecast(self, symbol, interval, start_forecast_datetime, history_bars):
-        if datetime.strptime(start_forecast_datetime, "%Y-%m-%dT%H:%M:%S.%fZ")  > datetime.now():
+        if datetime.strptime(start_forecast_datetime, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.now():
             raise InvalidHistoryBars(code="InvalidStartForecastDatetime", message="Forecast datetime can not be in future")
         start_forecast_datetime = start_forecast_datetime.split('T')[0]
+        print(start_forecast_datetime)
         try:
             interval = int(interval)
         except Exception as e:
